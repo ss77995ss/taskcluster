@@ -11,6 +11,7 @@ const {
   readRepoFile,
   writeRepoFile,
   modifyRepoJSON,
+  modifyRepoYAML,
   modifyRepoFile,
   removeRepoFile,
   REPO_ROOT,
@@ -92,12 +93,12 @@ module.exports = ({tasks, cmdOptions}) => {
         changed.push(file);
       }
 
-      const tctf = 'infrastructure/terraform/taskcluster.tf.json';
-      utils.status({message: `Update ${tctf}`});
-      await modifyRepoJSON(tctf, contents => {
-        contents.locals.taskcluster_image_monoimage = `taskcluster/taskcluster:v${requirements['release-version']}`;
+      const helmchart = 'infrastructure/k8s/Chart.yaml';
+      utils.status({message: `Update ${helmchart}`});
+      await modifyRepoYAML(helmchart, contents => {
+        contents.appVersion = requirements['release-version'];
       });
-      changed.push(tctf);
+      changed.push(helmchart);
 
       const pyclient = 'clients/client-py/setup.py';
       utils.status({message: `Update ${pyclient}`});
